@@ -139,10 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="core.c" />
+    <ClCompile Include="core_instructions.c" />
+    <ClCompile Include="IO.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="main_memory.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_structures.h" />
+    <ClInclude Include="core.h" />
+    <ClInclude Include="core_instructions.h" />
     <ClInclude Include="HardCodedData.h" />
+    <ClInclude Include="IO.h" />
+    <ClInclude Include="main_memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,9 +18,36 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core_instructions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main_memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IO.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HardCodedData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core_instructions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
