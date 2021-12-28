@@ -86,4 +86,4 @@ void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus
 			//bool IsConfiged = ConfigBus(MAIN_MEMORY_ORIGID, Flush, changed_memory->addr_to_send, SentData, new_MESI_bus);
 		}
 	}
-} 
+}  
