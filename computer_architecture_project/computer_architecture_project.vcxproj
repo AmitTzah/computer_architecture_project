@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cache_memory.c" />
     <ClCompile Include="core.c" />
     <ClCompile Include="core_instructions.c" />
     <ClCompile Include="IO.c" />
@@ -146,6 +147,7 @@
     <ClCompile Include="main_memory.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cache_memory.h" />
     <ClInclude Include="common_structures.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="core_instructions.h" />

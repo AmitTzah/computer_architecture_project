@@ -12,7 +12,7 @@
 #define WAIT_TIME 63
 #define MAIN_MEMORY_ORIGID 4
 #define MAIN_MEMORY_SIZE 1<<20
-#define ZERO 0
+#define ZERO_NUMBER 0
 #define NOT_DEFINED -1
 
 typedef enum bus_cmd {
@@ -45,4 +45,7 @@ typedef struct main_memory {
 	int bus_read_origid;
 }main_memory;
 
+bool configure_bus(int bus_origid, bus_cmd bus_cmd, int bus_address, int bus_data, MESI_Bus* new_MESI_bus);
+void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus, MESI_Bus* new_MESI_bus,
+	main_memory* changed_memory, int argc, char** argv);
 #endif // !MAIN_MEMMORY

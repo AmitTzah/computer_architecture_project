@@ -1,5 +1,6 @@
 #ifndef  CORE_H
 #define  CORE_H
+#include <stdbool.h>
 
 
 #define MAX_PC 1024
@@ -40,12 +41,7 @@ typedef struct decoded_instruction {
 	opcode op_code;
 	int rd, rt, rs, immediate;
 }decoded_instruction;
-typedef struct core_data {
 
-	unsigned int IMEM[MAX_PC];
-	int core_registers[NUMBER_OF_REGISTERS_IN_CORE];
-
-}core_data;
 
 typedef struct IF_ID_registers {
 
@@ -76,7 +72,7 @@ typedef struct EX_MEM_registers {
 typedef struct MEM_WB_registers {
 
 	unsigned int current_pc;
-	int ALU_result, MEM_result, rt;//rt means destination reg
+	int ALU_result, MEM_result, dst;
 	bool MEM_stall_flag;//if TRUE -> the MEM is stalled
 	opcode op_code;
 
@@ -92,11 +88,15 @@ typedef struct core_pipeline_registers {
 
 }core_pipeline_registers;
 
+typedef struct unit_to_be_watched {
+	bool is_watched;
+	int addr_to_watch;
+}unit_to_be_watched;
 typedef struct core_info_struct {
 	unsigned int IMEM[MAX_PC];
 	int core_regs[NUMBER_OF_REGISTERS_IN_CORE];
 	//CacheData Cache;
-	//Watch_unit Watch_flag;
+	unit_to_be_watched watch_flag;
 	core_pipeline_registers pipeline_regs_old;
 	core_pipeline_registers pipeline_regs_new;
 	//Stats core_statistic;

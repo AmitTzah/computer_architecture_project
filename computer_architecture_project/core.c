@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "core.h"
 #include "core_instructions.h"
+#include "cache_memory.h"
 
 void decode_IR(unsigned int IR, decoded_instruction* instruction)
 {
@@ -97,6 +98,13 @@ bool is_the_instruction_for_ALU(opcode opcode)
 	return false;
 }
 
+
+void set_watch_flag(core_info_struct* core_data, int addr_to_watch)
+{
+	core_data->watch_flag.is_watched = true;
+	core_data->watch_flag.addr_to_watch = addr_to_watch;
+}
+
 void ID_stage(core_info_struct* core_data) {
 
 	IF_ID_registers* IF_ID_old = &core_data->pipeline_regs_old.IF_ID_regs, * IF_ID_new = &core_data->pipeline_regs_new.IF_ID_regs;
@@ -117,7 +125,7 @@ void ID_stage(core_info_struct* core_data) {
 		IF_ID_new->fetch_enable_flag = false;
 		IF_ID_new->IR = BUBBLE_INSTRUCTION;
 	}
-	//ID_EX_new->is_decode_stall = is_need_to_stall_in_decode_stage(&core_data->pipeline_regs_old, ID_EX_new);
+	//ID_EX_new->decode_stall_flag = is_need_to_stall_in_decode_stage(&core_data->pipeline_regs_old, ID_EX_new);
 }
 
 void EX_stage(ID_EX_registers* ID_EX_old, EX_MEM_registers* EX_MEM_new) {
@@ -136,14 +144,57 @@ void EX_stage(ID_EX_registers* ID_EX_old, EX_MEM_registers* EX_MEM_new) {
 
 }
 
-void MEM_stage() {
+void MEM_stage(core_info_struct* core_data, cache_data* cache_data,
+	MESI_Bus* OldMsiBus, MESI_Bus* NewMsiBus, main_memory* changed_main_memory) {
 
+	EX_MEM_registers* EX_MEM_old = &core_data->pipeline_regs_old.EX_MEM_regs;
+	MEM_WB_registers* MEM_WB_new = &core_data->pipeline_regs_new.MEM_WB_regs;
+	int ProcessorNumber = core_data->pipeline_regs_old.number_of_the_core;
+	bool memory_hit = true;
+	if (EX_MEM_old->op_code == LW || EX_MEM_old->op_code == LL) {
+		memory_hit = read_from_cache(EX_MEM_old->ALU_result, EX_MEM_old->data_in, &MEM_WB_new->MEM_result,
+			ProcessorNumber, cache_data, OldMsiBus, NewMsiBus, changed_main_memory);
+		if (memory_hit && EX_MEM_old->op_code == LL) {
+			set_watch_flag(core_data, EX_MEM_old->ALU_result);
+		}
+	}
+	else if (EX_MEM_old->op_code == SW) {
+		memory_hit = write_to_cache(EX_MEM_old->ALU_result, EX_MEM_old->data_in,
+			ProcessorNumber, cache_data, OldMsiBus, NewMsiBus, changed_main_memory);
+	}
+	else if (EX_MEM_old->op_code == SC) {
+		if (core_data->watch_flag.is_watched) {
+			memory_hit = write_to_cache(EX_MEM_old->ALU_result, EX_MEM_old->data_in,
+				ProcessorNumber, cache_data, OldMsiBus, NewMsiBus, changed_main_memory);
+			if (memory_hit) {
+				MEM_WB_new->MEM_result = 1;  //R[rd] = succes
+				core_data->watch_flag.is_watched = false;
+			}
+		}
+		else
+			MEM_WB_new->MEM_result = 0;   //R[rd] = fail
+	}
+	MEM_WB_new->ALU_result = EX_MEM_old->ALU_result;
+	MEM_WB_new->dst = EX_MEM_old->dst;
+	MEM_WB_new->op_code = EX_MEM_old->op_code;
+	MEM_WB_new->current_pc = EX_MEM_old->current_pc;
+	MEM_WB_new->MEM_stall_flag = (memory_hit == false);
+	if (EX_MEM_old->op_code == JAL)   //moving next PC to WB stage
+		MEM_WB_new->MEM_result = EX_MEM_old->data_in;
 
 }
 
-void WB_stage() {
+void WB_stage(MEM_WB_registers* MEM_WB_old, int* core_regs) {
 
-
+	if (MEM_WB_old->dst == ZERO || MEM_WB_old->dst == IMM) {  //RO registers
+		return;
+	}
+	if (is_the_instruction_for_ALU(MEM_WB_old->op_code)) {
+		core_regs[MEM_WB_old->dst] = MEM_WB_old->ALU_result;
+	}
+	else if (MEM_WB_old->op_code == LW || MEM_WB_old->op_code == LL || MEM_WB_old->op_code == SC || MEM_WB_old->op_code == JAL) {
+		core_regs[MEM_WB_old->dst] = MEM_WB_old->MEM_result;
+	}
 }
 
 

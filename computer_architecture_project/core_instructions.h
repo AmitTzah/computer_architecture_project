@@ -12,4 +12,5 @@ int MUL_instruction(int rs_data, int rt_data);
 int SLL_instruction(int rs_data, int rt_data);
 int SRA_instruction(int rs_data, int rt_data);
 int SRL_instruction(int rs_data, int rt_data);
+int ALU_instruction(int rs_data, int rt_data, opcode opcode);
 #endif // !CORE_INSTRUCTIONS

@@ -5,9 +5,9 @@
 void clean_bus(MESI_Bus* mesi_bus) {
 	mesi_bus->bus_cmd = NoCommand;
 	mesi_bus->is_the_bus_configed = false;
-	mesi_bus->bus_address = ZERO;
-	mesi_bus->bus_data = ZERO;
-	mesi_bus->bus_origid = ZERO;
+	mesi_bus->bus_address = ZERO_NUMBER;
+	mesi_bus->bus_data = ZERO_NUMBER;
+	mesi_bus->bus_origid = ZERO_NUMBER;
 	mesi_bus->bus_shared = false;
 }
 
@@ -37,8 +37,8 @@ void add_data_to_memory(int Data, int Address, main_memory* changed_memory, int 
 
 void initialize_main_memory(main_memory* changed_memory) {
 	changed_memory->addr_to_send = NOT_DEFINED;
-	changed_memory->size = ZERO;
-	changed_memory->time_counter = ZERO;
+	changed_memory->size = ZERO_NUMBER;
+	changed_memory->time_counter = ZERO_NUMBER;
 	changed_memory->bus_read_origid = NOT_DEFINED;
 }
 
@@ -78,7 +78,7 @@ void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus
 		changed_memory->addr_to_send = old_MESI_bus->bus_address;
 		changed_memory->bus_read_origid = old_MESI_bus->bus_origid;
 	}
-	else if (old_MESI_bus->bus_cmd == NoCommand && changed_memory->time_counter > ZERO
+	else if (old_MESI_bus->bus_cmd == NoCommand && changed_memory->time_counter > ZERO_NUMBER
 		&& ProcessorNum == changed_memory->bus_read_origid) {
 		changed_memory->time_counter--;
 		if (changed_memory->time_counter == 0) {
@@ -86,4 +86,4 @@ void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus
 			//bool IsConfiged = ConfigBus(MAIN_MEMORY_ORIGID, Flush, changed_memory->addr_to_send, SentData, new_MESI_bus);
 		}
 	}
-}  
+}
