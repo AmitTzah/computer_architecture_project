@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "IO.h"
-#include "common_structures.h"
 #include "core.h"
 #include "main_memory.h"
 
@@ -58,7 +57,6 @@ void write_data_to_file(FILE* dst_fp, FILE* src_fp, const char* file_name) {
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -278,11 +276,12 @@ void print_trace_of_bus(int clk, MESI_Bus MESI_Bus, int argc, char** argv)
 	fclose(bustrace_fp);
 }
 
-/*void print_cache_memory_for_a_single_core(int core_num, CacheMemory cache_memory, int argc, char** argv)
+
+void print_cache_memory_for_a_single_core(int core_num, cache_mem cache_memory, int argc, char** argv)
 {
 	FILE* dsram_fp, * tsram_fp;
-	char* dsram_files[NUM_OF_CORES] = DSRAM_FILES;
-	char* tsram_files[NUM_OF_CORES] = TSRAM_FILES;
+	char* dsram_files[NUMBER_OF_CORES] = DSRAM_FILES_NAMES;
+	char* tsram_files[NUMBER_OF_CORES] = TSRAM_FILES_NAMES;
 	if (argc == NUM_OF_INPUT_FILES)
 	{
 		fopen_s(&dsram_fp, argv[DSARM0 + core_num], "w");
@@ -301,22 +300,22 @@ void print_trace_of_bus(int clk, MESI_Bus MESI_Bus, int argc, char** argv)
 	int tsram_line;
 	for (int i = 0; i < CACHE_SIZE; i++)
 	{
-		fprintf(dsram_fp, "%08X\n", cache_memory.DSRam[i]);
-		tsram_line = (cache_memory.TSRam[i].MsiState << 12) + cache_memory.TSRam[i].Tag;
+		fprintf(dsram_fp, "%08X\n", cache_memory.DS_Ram[i]);
+		tsram_line = (cache_memory.TS_Ram[i].MESI_state << 12) + cache_memory.TS_Ram[i].tag;
 		fprintf(tsram_fp, "%08X\n", tsram_line);
 	}
 	fclose(dsram_fp);
 	fclose(tsram_fp);
-}*/
+}
 
-/*void PrintStatsForCore(int core_num, Stats stats, int argc, char** argv)
+void print_statistics_of_the_core(int core_num, core_statistics stats, int argc, char** argv)
 {
 	FILE* stats_fp;
 	if (argc == NUM_OF_INPUT_FILES)
 		fopen_s(&stats_fp, argv[STATS0 + core_num], "w");
 	else
 	{
-		char* stats_files[NUM_OF_CORES] = STATS_FILES;
+		char* stats_files[NUMBER_OF_CORES] = STATISTICS_FILES_NAMES;
 		fopen_s(&stats_fp, stats_files[core_num], "w");
 	}
 	if (stats_fp == NULL)
@@ -324,13 +323,13 @@ void print_trace_of_bus(int clk, MESI_Bus MESI_Bus, int argc, char** argv)
 		printf("Couldn't open stats%d file\n", core_num);
 		exit(3);
 	}
-	fprintf(stats_fp, "cycles %d\n", stats.cycles);
-	fprintf(stats_fp, "instructions %d\n", stats.instructions);
-	fprintf(stats_fp, "read_hit %d\n", stats.read_hit);
-	fprintf(stats_fp, "write_hit %d\n", stats.write_hit);
-	fprintf(stats_fp, "read_miss %d\n", stats.read_miss);
-	fprintf(stats_fp, "write_miss %d\n", stats.write_miss);
-	fprintf(stats_fp, "decode stall %d\n", stats.decode_stall);
-	fprintf(stats_fp, "mem_stall %d\n", stats.mem_stall);
+	fprintf(stats_fp, "cycles %d\n", stats.number_of_cycles);
+	fprintf(stats_fp, "instructions %d\n", stats.number_of_instructions);
+	fprintf(stats_fp, "read_hit %d\n", stats.number_of_read_hits);
+	fprintf(stats_fp, "write_hit %d\n", stats.number_of_write_hit);
+	fprintf(stats_fp, "read_miss %d\n", stats.number_of_read_miss);
+	fprintf(stats_fp, "write_miss %d\n", stats.number_of_write_miss);
+	fprintf(stats_fp, "decode stall %d\n", stats.number_of_decode_stalls);
+	fprintf(stats_fp, "mem_stall %d\n", stats.number_of_mememory_stalls);
 	fclose(stats_fp);
-}*/
+}

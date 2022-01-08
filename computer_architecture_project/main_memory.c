@@ -1,6 +1,6 @@
 
 #include "main_memory.h"
-
+#include "IO.h"
 
 void clean_bus(MESI_Bus* mesi_bus) {
 	mesi_bus->bus_cmd = NoCommand;
@@ -18,22 +18,22 @@ void add_data_to_memory(int Data, int Address, main_memory* changed_memory, int 
 	}
 	if (Address > changed_memory->size) {
 		for (int i = (changed_memory->size + 1); i < Address; i++) {
-			//PrintLineToMainMemory(i, 0, argc, argv);
+			print_a_line_to_the_main_memory(i, 0, argc, argv);
 		}
 		changed_memory->size = Address;
 	}
-	//PrintLineToMainMemory(Address, Data, argc, argv);
-	//TODO:^^^
+	print_a_line_to_the_main_memory(Address, Data, argc, argv);
+
 }
 
-/*void initialize_memout(int argc, char** argv, main_memory* changed_memory) {
-	int max_addr = NumberOfLinesInMemin(argc, argv);
+void initialize_memout(int argc, char** argv, main_memory* changed_memory) {
+	int max_addr = number_of_lines_in_MEMIN(argc, argv);
 	changed_memory->size = max_addr;
 	for (int WriteAddress = 0; WriteAddress <= max_addr; WriteAddress++) {
-		unsigned int DataFromMemin = ReadLineFromMainMemory(WriteAddress, argc, argv, true);
-		PrintLineToMainMemory(WriteAddress, DataFromMemin, argc, argv);
+		unsigned int DataFromMemin = read_a_line_from_main_memory(WriteAddress, argc, argv, true);
+		print_a_line_to_the_main_memory(WriteAddress, DataFromMemin, argc, argv);
 	}
-}*/
+}
 
 void initialize_main_memory(main_memory* changed_memory) {
 	changed_memory->addr_to_send = NOT_DEFINED;
@@ -71,7 +71,7 @@ void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus
 	main_memory* changed_memory, int argc, char** argv) {
 	if (old_MESI_bus->bus_cmd == Flush && old_MESI_bus->bus_origid != MAIN_MEMORY_ORIGID) {
 		changed_memory->time_counter = 0;
-		//	AppendDataToMainMemory(old_MESI_bus->bus_data, old_MESI_bus->bus_address, changed_memory, argc, argv);
+		add_data_to_memory(old_MESI_bus->bus_data, old_MESI_bus->bus_address, changed_memory, argc, argv);
 	}
 	else if (old_MESI_bus->bus_cmd == BusRd || old_MESI_bus->bus_cmd == BusRdX) {
 		changed_memory->time_counter = WAIT_TIME;
@@ -82,8 +82,8 @@ void execute_bus_orders_for_main_memory(int ProcessorNum, MESI_Bus* old_MESI_bus
 		&& ProcessorNum == changed_memory->bus_read_origid) {
 		changed_memory->time_counter--;
 		if (changed_memory->time_counter == 0) {
-			//int SentData = ReadLineFromMainMemory(changed_memory->addr_to_send, argc, argv, false);
-			//bool IsConfiged = ConfigBus(MAIN_MEMORY_ORIGID, Flush, changed_memory->addr_to_send, SentData, new_MESI_bus);
+			int sent_data = read_a_line_from_main_memory(changed_memory->addr_to_send, argc, argv, false);
+			bool is_confirmed = configure_bus(MAIN_MEMORY_ORIGID, Flush, changed_memory->addr_to_send, sent_data, new_MESI_bus);
 		}
 	}
 }

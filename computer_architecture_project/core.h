@@ -1,8 +1,10 @@
 #ifndef  CORE_H
 #define  CORE_H
+
 #include <stdbool.h>
-
-
+#include "common_structures.h"
+#include "cache_memory.h"
+#include "pipeline.h"
 #define MAX_PC 1024
 #define NUMBER_OF_REGISTERS_IN_CORE 15
 
@@ -15,7 +17,7 @@
 #define RT_CODE_MASK 0x0000F000
 #define RT_CODE_INDEX 12
 #define FINAL_12_BITS 0x00000FFF
-#define SIGN_BITS_MASK 0x800
+#define SIGN_BITS_MASK 2048
 #define NEGATIVE_BITS_EXPENSION 0xFFFFF000
 #define JAL_REGISTER 15
 
@@ -23,83 +25,30 @@
 
 
 
-
-enum registers_of_cpu
-{
-	ZERO = 0, IMM, R1, R2, R3, R4, R5, R6
-	, R7, R8, R9, R10, R11, R12, R13, R14, R15
-}typedef registers_of_cpu;
-
-typedef enum opcode {
-	ADD = 0, SUB, AND, OR, XOR, MUL, SLL, SRA,
-	SRL, BEQ, BNE, BLT, BGT, BLE, BGE, JAL, LW,
-	SW, LL, SC, HALT, BUBBLE
-}opcode;
-
-
-typedef struct decoded_instruction {
-	opcode op_code;
-	int rd, rt, rs, immediate;
-}decoded_instruction;
-
-
-typedef struct IF_ID_registers {
-
-	unsigned int current_pc;
-	unsigned int next_pc;
-	bool fetch_enable_flag;
-	unsigned int IR;
-
-}IF_ID_registers;
-
-typedef struct ID_EX_registers {
-
-	int rd, rd_data, rt, rt_data, rs, rs_data, dst;
-	opcode op_code;
-	unsigned current_pc;
-	bool decode_stall_flag; //if TRUE -> the Decode is stalled
-
-}ID_EX_registers;
-
-typedef struct EX_MEM_registers {
-
-	opcode op_code;
-	unsigned int current_pc;
-	int data_in, ALU_result, rt, dst;
-
-}EX_MEM_registers;
-
-typedef struct MEM_WB_registers {
-
-	unsigned int current_pc;
-	int ALU_result, MEM_result, dst;
-	bool MEM_stall_flag;//if TRUE -> the MEM is stalled
-	opcode op_code;
-
-}MEM_WB_registers;
-
-typedef struct core_pipeline_registers {
-
-	int number_of_the_core;
-	IF_ID_registers IF_ID_regs;
-	ID_EX_registers ID_EX_regs;
-	EX_MEM_registers EX_MEM_regs;
-	MEM_WB_registers MEM_WB_regs;
-
-}core_pipeline_registers;
-
 typedef struct unit_to_be_watched {
 	bool is_watched;
 	int addr_to_watch;
 }unit_to_be_watched;
+
 typedef struct core_info_struct {
 	unsigned int IMEM[MAX_PC];
 	int core_regs[NUMBER_OF_REGISTERS_IN_CORE];
-	//CacheData Cache;
+	cache_data cache_data;
 	unit_to_be_watched watch_flag;
 	core_pipeline_registers pipeline_regs_old;
 	core_pipeline_registers pipeline_regs_new;
-	//Stats core_statistic;
+	core_statistics core_statistic;
 }core_info_struct;
 
+typedef struct global_memory {
+	main_memory changed_main_memory;
+	MESI_Bus old_MESI_bus;
+	MESI_Bus new_MESI_bus;
+}global_memory;
+
+void check_for_watch_flags_update(core_info_struct* cores_data, MESI_Bus old_MESI_bus);
+bool run_one_core_cycle(core_info_struct* core_data, global_memory* global_memory, int number_of_core, unsigned int clk, int argc, char** argv);
+bool need_to_check_for_watch_update(core_info_struct* cores_data, MESI_Bus old_MESI_bus);
+void initialize_core_data(core_info_struct* core_data, int core_num, int argc, char** argv);
+void Init_all_cores_data(core_info_struct cores_data[], int argc, char** argv);
 #endif // ! CORE_H

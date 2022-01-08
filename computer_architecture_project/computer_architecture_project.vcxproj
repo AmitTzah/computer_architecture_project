@@ -145,6 +145,7 @@
     <ClCompile Include="IO.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="main_memory.c" />
+    <ClCompile Include="pipeline.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cache_memory.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="HardCodedData.h" />
     <ClInclude Include="IO.h" />
     <ClInclude Include="main_memory.h" />
+    <ClInclude Include="pipeline.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
